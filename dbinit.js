@@ -16,6 +16,10 @@ exports = module.exports = function (context, done) {
         var tableName = file.substring(0, file.indexOf('.'));
         var query = builder.getSql(tableName, idType);
 
-        context.mssql.query(query);
+        context.mssql.query(query, {
+            error: function (err) {
+                console.log('Error creating the table for ', tableName, ' due to error: ' + err.toString());
+            }
+        });
     });
 };
