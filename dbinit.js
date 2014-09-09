@@ -25,7 +25,7 @@ exports = module.exports = function (context, done) {
 
         context.mssql.query(query, {
             error: function (err) {
-                console.log('Error creating the table for ', tableName, ' due to error: ' + err.toString());
+                console.log('Error creating the table for ', tableName, ' due to error: ', err.toString());
             }
         });
     });
