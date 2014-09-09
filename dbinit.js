@@ -22,4 +22,8 @@ exports = module.exports = function (context, done) {
             }
         });
     });
+
+    if (typeof done === 'function') {
+        done();
+    }
 };
