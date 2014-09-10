@@ -9,7 +9,7 @@ exports = module.exports = function (context, done) {
     var schemaName = context.schemaName || (context.serviceName || process.env.MS_MobileServiceName).replace(/-/g, '_');
     var idType = context.idType || 'string';
 
-    var builder = new TableBuilder(schemaName);
+    var builder = new TableBuilder(context.mssql, schemaName);
 
     var files = fs.readdirSync(tablesPath);
     files.forEach(function (file) {
@@ -17,17 +17,13 @@ exports = module.exports = function (context, done) {
 
         var tableName = file.substring(0, file.indexOf('.'));
         // validate its a valid table name
-        if (!tableNamePattern.test(tableName)) {
-            return;
+        if (tableNamePattern.test(tableName)) {
+            builder.ensureTable(tableName, idType, function (err) {
+                if (err) {
+                    console.log('Error creating the table for ', tableName, ' due to error: ', err.toString());
+                }
+            });
         }
-
-        var query = builder.getSql(tableName, idType);
-
-        context.mssql.query(query, {
-            error: function (err) {
-                console.log('Error creating the table for ', tableName, ' due to error: ', err.toString());
-            }
-        });
     });
 
     if (typeof done === 'function') {

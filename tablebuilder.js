@@ -5,13 +5,26 @@
     SQL_DEF_ID_INT = "[id] [int] IDENTITY(1,1) NOT NULL";
 
 var TableBuilder = (function () {
-    function TableBuilder(schemaName) {
+    function TableBuilder(connection, schemaName) {
+        this.connection = connection;
         this.schemaName = schemaName;
     }
 
-    TableBuilder.prototype.getSql = function (tableName, idType) {
-        var columnDefs = [],
-            self = this;
+    TableBuilder.prototype.ensureTable = function (tableName, idType, done) {
+        var query = this._getSql(tableName, idType);
+
+        this.connection.query(query, {
+            success: function () {
+                done();
+            },
+            error: function (err) {
+                done(err);
+            }
+        });
+    };
+
+    TableBuilder.prototype._getSql = function (tableName, idType) {
+        var columnDefs = [];
 
         columnDefs.push(this._getIdDefinition(idType));
 
@@ -20,14 +33,14 @@ var TableBuilder = (function () {
                                      .replace(/%3\$s/g, columnDefs.join(','));
 
         return query;
-    }
+    };
 
     TableBuilder.prototype._getIdDefinition = function (type) {
         if (type == 'number') {
             return SQL_DEF_ID_INT;
         }
         return SQL_DEF_ID_STRING;
-    }
+    };
 
     return TableBuilder
 })();
