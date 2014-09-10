@@ -19,3 +19,7 @@ module.exports.startup = function (context, done) {
 }
 ```
 That's it and from now on you can just create .json files in your tables folder and access them from REST API of your Mobile Service.
+
+### Note ###
+
+The tables are created on app startup that means your Mobile Service has to be restarted for the new tables to work. This happens automatically when you commit and push your new json file. Also tables created using this extension are not visible in the portal or CLI.
